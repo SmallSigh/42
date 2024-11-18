@@ -1,49 +1,98 @@
 #include "get_next_line.h"
 
-char *buffer_to_line(int fd, char *buffer, char *bucket)
+char *empty_bucket(char *bucket)
 {
-    int read_bytes;
-    char *char_temp;
+	int i;
+	int j;
+	char *new_bucket;
 
-	read_bytes = 1;
-	while (read_bytes != '\0')
+	i = 0;
+	j = 0;
+	while (bucket[i] && bucket[i] != '\n')
+		i++;
+	if (!bucket[i])
 	{
-		read_bytes = read(fd, buffer, BUFFER_SIZE);
-		if (read_bytes == -1)
-			return (0);
-		else if (read_bytes == 0)
-			break ;
-		buffer[read_bytes] = '\0';
-		if (!bucket)
-			bucket = ft_strdup("");
-		char_temp = bucket;
-		bucket = ft_strjoin(char_temp, buffer);
-		free(char_temp);
-		char_temp = NULL;
-		if (ft_strchr(buffer, '\n'))
-			break ;
+		free(bucket);
+		return (NULL);
 	}
+	new_bucket = malloc(sizeof(char) * (ft_strlen(bucket) - i));
+	if (!new_bucket)
+		return (NULL);
+	i++;
+	while (bucket[i])
+		new_bucket[j++] = bucket[i++];
+	new_bucket[j] = '\0';
+	free(bucket);
+	return (new_bucket); 
+}
+
+char *fill_aquarium(char *bucket)
+{
+	char *aquarium;
+	int i;
+
+	i = 0;
+	if (!bucket[i])
+		return (NULL);
+	while (bucket[i] && bucket[i] != '\n')
+		i++;
+	aquarium = (char *)malloc(sizeof(char) * (i + 2));
+	if (!aquarium)
+		return (NULL);
+	i = 0;
+	while (bucket[i] && bucket[i] != '\n')
+	{
+		aquarium[i] = bucket[i];
+		i++;
+	}
+	if (bucket[i] == '\n')
+	{
+		aquarium[i] = bucket[i];
+		i++;
+	}
+	aquarium[i] = '\0';
+	return (aquarium);
+}
+
+char	*fill_the_bucket(int fd, char *bucket)
+{
+	int rd_bytes;
+	char *buffer;
+
+	rd_bytes = 1;
+	buffer = malloc(sizeof(char) * (BUFFER_SIZE + 1));
+	if (!buffer)
+		return (NULL);
+	while (!ft_strchr(bucket, '\n') && (rd_bytes > 0))
+	{
+		rd_bytes = read(fd, buffer, BUFFER_SIZE);
+		if (rd_bytes <= 0)
+		{
+			free(buffer);
+			buffer = NULL;
+			return (NULL);
+		}
+		buffer[rd_bytes] = '\0';
+		bucket = ft_strjoin(bucket, buffer);
+	}
+	free(buffer);
+	buffer = NULL;
 	return (bucket);
 }
 
-char *get_next_line(fd)
+char	*get_next_line(int fd)
 {
-    char *buffer;
-    char *line;
-    static char *bucket;
+	char *aquarium;
+	static char *bucket;
 
-    if (fd < 0 || BUFFER_SIZE <= 0)
-        return (0);
-    buffer = (char *)malloc(sizeof(char) * (BUFFER_SIZE * 1));
-    if (!buffer)
-        return (0);
-    line = buffer_to_line(fd, buffer, bucket);
-    free(buffer);
-	buffer = NULL;
-	if (!line)
+	if (fd == 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	bucket = extract(line);
-    return (line);
+	bucket = fill_the_bucket(fd, bucket);
+	if (!bucket)
+		return (0);
+	aquarium = fill_aquarium(bucket);
+	bucket = empty_bucket(bucket);
+	return (aquarium);
 }
 
 int main(void)
@@ -51,13 +100,17 @@ int main(void)
     int fd;
     char *s;
 
-    fd = open("/txt.1", O_RDONLY);
+    fd = open("1.txt", O_RDONLY);
     if (fd == -1)
+	{
+		perror("Error opening file");
         return (1);
-    while (*s = get_next_line(fd) != NULL)
+	}
+    while ((s = get_next_line(fd)) != NULL)
     {
         printf("%s", s);
         free(s);
     }
+	close(fd);
     return (0);
 }
