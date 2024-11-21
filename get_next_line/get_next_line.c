@@ -63,10 +63,10 @@ char	*fill_the_bucket(int fd, char *bucket)
 	buffer = malloc(sizeof(char) * (BUFFER_SIZE + 1));
 	if (!buffer)
 		return (NULL);
-	while (!ft_strchr(bucket, '\n') && (rd_bytes > 0))
+	while (!ft_strchr(bucket, '\n') && (rd_bytes != 0))
 	{
 		rd_bytes = read(fd, buffer, BUFFER_SIZE);
-		if (rd_bytes <= 0)
+		if (rd_bytes == -1)
 		{
 			free(buffer);
 			buffer = NULL;
@@ -76,17 +76,17 @@ char	*fill_the_bucket(int fd, char *bucket)
 		bucket = ft_strjoin(bucket, buffer);
 	}
 	free(buffer);
-	buffer = NULL;
+	// buffer = NULL;
 	return (bucket);
 }
 
 char	*get_next_line(int fd)
 {
-	char *aquarium;
-	static char *bucket;
+	char		*aquarium;
+	static char	*bucket;
 
-	if (fd == 0 || BUFFER_SIZE <= 0)
-		return (NULL);
+	if (fd < 0 || BUFFER_SIZE <= 0)
+		return (0);
 	bucket = fill_the_bucket(fd, bucket);
 	if (!bucket)
 		return (0);
@@ -95,10 +95,10 @@ char	*get_next_line(int fd)
 	return (aquarium);
 }
 
-int main(void)
+int	main(void)
 {
-    int fd;
-    char *s;
+    int		fd;
+    char	*s;
 
     fd = open("1.txt", O_RDONLY);
     if (fd == -1)
