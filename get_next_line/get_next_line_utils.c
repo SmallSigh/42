@@ -1,59 +1,69 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   get_next_line_utils.c                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: masmit <masmit@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/08/16 10:12:58 by ajordan-          #+#    #+#             */
+/*   Updated: 2024/11/21 17:51:15 by masmit           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "get_next_line.h"
 
-size_t	ft_strlen(char *s)
+size_t	ft_strlen(const char *s1)
 {
-	size_t	i;
+	size_t	a;
 
-	i = 0;
-	if (!s)
-		return (0);
-	while (s[i] != '\0')
-		i++;
-	return (i);
+	a = 0;
+	while (s1[a] != '\0')
+		a++;
+	return (a);
 }
 
-char	*ft_strchr(char *s, int c)
+char	*ft_strchr(const char *string, int c)
 {
-	int	i;
+	unsigned char	to_find;
 
-	i = 0;
-	if (!s)
+	if (!string)
 		return (0);
-	if (c == '\0')
-		return ((char *)&s[ft_strlen(s)]);
-	while (s[i] != '\0')
+	to_find = (unsigned char)c;
+	while (*string != '\0')
 	{
-		if (s[i] == (char) c)
-			return ((char *)&s[i]);
-		i++;
+		if (*string == to_find)
+			return ((char *)string);
+		string++;
 	}
+	if (to_find == '\0')
+		return ((char *)string);
 	return (0);
 }
 
-char	*ft_strjoin(char *bucket, char *buff)
+char	*ft_strjoin(char *s1, char *s2)
 {
 	size_t	i;
 	size_t	j;
 	char	*str;
 
-	if (!bucket)
+	if (!s1)
 	{
-		bucket = (char *)malloc(1 * sizeof(char));
-		bucket[0] = '\0';
+		s1 = (char *)malloc(sizeof(char) * 1);
+		s1[0] = '\0';
 	}
-	if (!bucket || !buff)
+	if (!s1 || !s2)
 		return (NULL);
-	str = malloc(sizeof(char) * ((ft_strlen(bucket) + ft_strlen(buff)) + 1));
+	str = malloc(sizeof(char) * ((ft_strlen(s1) + ft_strlen(s2)) + 1));
 	if (str == NULL)
 		return (NULL);
 	i = -1;
 	j = 0;
-	if (bucket)
-		while (bucket[++i] != '\0')
-			str[i] = bucket[i];
-	while (buff[j] != '\0')
-		str[i++] = buff[j++];
-	str[ft_strlen(bucket) + ft_strlen(buff)] = '\0';
-	free(bucket);
+	if (s1)
+		while (s1[++i] != '\0')
+			str[i] = s1[i];
+	while (s2[j] != '\0')
+		str[i++] = s2[j++];
+	str[ft_strlen(s1) + ft_strlen(s2)] = '\0';
+	free(s1);
 	return (str);
 }
