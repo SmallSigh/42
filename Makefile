@@ -1,36 +1,41 @@
 # Compiler and flags
-CC = gcc
-CFLAGS = -Wall -Wextra -Werror
+CC = cc
+CFLAGS = -Wall -Wextra -Werror -g
 
 # Directories
 SRC_DIRS = gnl ft_printf libft src
 INC_DIRS = $(addprefix -I, $(SRC_DIRS))
+OBJ_DIR = o_files
 
 # Source files
 SRC_FILES = $(wildcard $(addsuffix /*.c, $(SRC_DIRS)))
-OBJ_FILES = $(SRC_FILES:.c=.o)
+OBJ_FILES = $(patsubst %.c, $(OBJ_DIR)/%.o, $(SRC_FILES))
 
 # Output executable
-TARGET = my_program
+NAME = run
 
 # Default target
-all: $(TARGET)
+all: $(NAME)
+
+# Create object directory
+$(OBJ_DIR):
+	mkdir -p $(OBJ_DIR)/gnl $(OBJ_DIR)/ft_printf $(OBJ_DIR)/libft $(OBJ_DIR)/src
 
 # Link object files to create the executable
-$(TARGET): $(OBJ_FILES)
-	$(CC) $(CFLAGS) $(OBJ_FILES) -o $(TARGET)
+$(NAME): $(OBJ_FILES)
+	$(CC) $(CFLAGS) $(OBJ_FILES) -o $(NAME)
 
 # Compile source files into object files
-%.o: %.c
+$(OBJ_DIR)/%.o: %.c | $(OBJ_DIR)
 	$(CC) $(CFLAGS) $(INC_DIRS) -c $< -o $@
 
 # Clean up build files
 clean:
-	rm -f $(OBJ_FILES)
+	rm -rf $(OBJ_DIR)
 
 # Clean up everything
 fclean: clean
-	rm -f $(TARGET)
+	rm -f $(NAME)
 
 # Rebuild everything
 re: fclean all
