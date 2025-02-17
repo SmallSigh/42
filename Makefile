@@ -3,8 +3,8 @@ CC = cc
 CFLAGS = -Wall -Wextra -Werror -g
 
 # Directories
-SRC_DIRS = gnl ft_printf libft src
-INC_DIRS = $(addprefix -I, $(SRC_DIRS))
+SRC_DIRS = lib/gnl lib/ft_printf lib/libft src
+INC_DIRS = $(addprefix -I, $(SRC_DIRS)) -Iinc
 OBJ_DIR = o_files
 
 # Source files
@@ -26,7 +26,8 @@ $(NAME): $(OBJ_FILES)
 	$(CC) $(CFLAGS) $(OBJ_FILES) -o $(NAME)
 
 # Compile source files into object files
-$(OBJ_DIR)/%.o: %.c | $(OBJ_DIR)
+$(OBJ_DIR)/%.o: %.c
+	mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) $(INC_DIRS) -c $< -o $@
 
 # Clean up build files
