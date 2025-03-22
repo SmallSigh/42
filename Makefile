@@ -1,45 +1,41 @@
-# Compiler and flags
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -g
+CFLAGS = -Wall -Wextra -Werror -Iinc -Ilib/libft
 
-# Directories
-SRC_DIRS = lib/gnl lib/ft_printf lib/libft src
-INC_DIRS = $(addprefix -I, $(SRC_DIRS)) -Iinc
-OBJ_DIR = o_files
+SRC_DIR = src
+LIBFT_DIR = lib/libft
 
-# Source files
-SRC_FILES = $(wildcard $(addsuffix /*.c, $(SRC_DIRS)))
-OBJ_FILES = $(patsubst %.c, $(OBJ_DIR)/%.o, $(SRC_FILES))
+SRCS = \
+	$(SRC_DIR)/main.c \
 
-# Output executable
-NAME = run
+OBJS = $(SRCS:.c=.o)
 
-# Default target
-all: $(NAME)
+LIBFT = $(LIBFT_DIR)/libft.a
 
-# Create object directory
-$(OBJ_DIR):
-	mkdir -p $(OBJ_DIR)/gnl $(OBJ_DIR)/ft_printf $(OBJ_DIR)/libft $(OBJ_DIR)/src
+NAME = a.out
 
-# Link object files to create the executable
-$(NAME): $(OBJ_FILES)
-	$(CC) $(CFLAGS) $(OBJ_FILES) -o $(NAME)
+ifneq ($(SHOW),1)
+QUIET = @
+endif
 
-# Compile source files into object files
-$(OBJ_DIR)/%.o: %.c
-	mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) $(INC_DIRS) -c $< -o $@
+all: $(LIBFT) $(NAME)
 
-# Clean up build files
+$(LIBFT):
+	$(QUIET)make -C $(LIBFT_DIR)
+
+$(NAME): $(OBJS) $(LIBFT)
+	$(QUIET)$(CC) $(CFLAGS) $(OBJS) $(LIBFT) -o $(NAME)
+
+%.o: %.c
+	$(QUIET)$(CC) $(CFLAGS) -c $< -o $@
+
 clean:
-	rm -rf $(OBJ_DIR)
+	$(QUIET)rm -f $(OBJS)
+	$(QUIET)make -C $(LIBFT_DIR) clean
 
-# Clean up everything
 fclean: clean
-	rm -f $(NAME)
+	$(QUIET)rm -f $(NAME)
+	$(QUIET)make -C $(LIBFT_DIR) fclean
 
-# Rebuild everything
 re: fclean all
 
-# Phony targets
-.PHONY: all clean fclean re
+.PHONY: all clean re fclean
