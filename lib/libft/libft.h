@@ -21,6 +21,20 @@
 # include <unistd.h>
 # include <stdbool.h>
 
+# define NO_OPEN "couldn't open file.\n"
+# define MEM_FAIL "couldn't allocate memory.\n"
+
+typedef struct s_file
+{
+	int		fd;
+	char	*buffer;
+	int		buf_size;
+	int		buf_pos;
+	int		buf_end;
+	int		eof;
+	int		error;
+}			t_file;
+
 int		ft_atoi(const char *str);
 void	ft_bzero(void *s, size_t n);
 void	*ft_calloc(size_t count, size_t size);
@@ -64,6 +78,9 @@ void	ft_putendl_fd(char *s, int fd);
 void	ft_putnbr_fd(int n, int fd);
 bool	is_filename_char(char c);
 void	bubble_sort(char **arr, size_t size);
+t_file	*ft_fopen(const char *filename, const char *mode);
+int		ft_fclose(t_file *file);
+int		ft_fgetc(t_file *file);
 
 typedef struct s_list
 {

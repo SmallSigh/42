@@ -11,7 +11,7 @@ LIBFT_SRCS = \
 	ft_putendl_fd.c ft_putnbr_fd.c ft_strdup.c ft_calloc.c \
 	ft_strcmp.c ft_isspace.c ft_strjoin_free.c ft_strjoin_char.c \
 	ft_realloc.c ft_strstr.c ft_leak.c ft_lstiter_param.c ft_filename.c \
-	ft_bubble.c
+	ft_bubble.c ft_fopen.c ft_fgetc.c
 
 BONUS_SRCS = \
 	ft_lstnew_bonus.c ft_lstadd_front_bonus.c ft_lstsize_bonus.c \
